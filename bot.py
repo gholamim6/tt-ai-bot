@@ -76,7 +76,7 @@ class Bot(teamtalk.TeamTalkServer):
         username, password = self.settings["username"], self.settings["password"]
         nickname, app_name = self.settings["nickname"], "tt_bot"
         self.login(nickname, username, password, app_name)
-        self.change_status(0, 'برای دریافت راهنما نویسه "h" را بفرستید.')
+        # self.change_status(0, 'برای دریافت راهنما نویسه "h" را بفرستید.')
         channel, channel_password = self.settings["channel"], self.settings["channel_password"]
         if channel:
             self.join(channel, channel_password)
