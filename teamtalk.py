@@ -359,7 +359,7 @@ class TeamTalkServer:
 			try:
 				line = line.decode()
 			except UnicodeDecodeError:
-				print("failed to decode line: " + line)
+				print(b"failed to decode line: " + line)
 				if callable(callback):
 					callback(self, "", {})
 				continue
