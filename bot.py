@@ -105,6 +105,7 @@ class Bot(teamtalk.TeamTalkServer):
             self.channel_message(message)
 
     def on_message_deliver(self, server, params):
+        response = ''
         message = params["content"].strip()
         message_type = params["type"]
         user = self.get_user(params["srcuserid"])
@@ -127,62 +128,43 @@ class Bot(teamtalk.TeamTalkServer):
         if message in "1۱":
             self.chats[chat_id] = "chatgpt"
             if not chat_id in self.chatgpt_user_messages:
-                text = "ساخت گفتگوی تازه با ChatGPT."
+                response = "ساخت گفتگوی تازه با ChatGPT."
             else:
-                text = "ادامه گفتگوی پیشین با ChatGPT."
+                response = "ادامه گفتگوی پیشین با ChatGPT."
         elif message in "2۲":
-            self.chats[chat_id] = "deepseek"
-            if not chat_id in self.deepseek_user_messages:
-                text = "ساخت گفتگوی تازه با Deepseek."
-            else:
-                text = "ادامه گفتگوی پیشین با Deepseek."
-        elif message in "3۳":
             self.chats[chat_id] = "groq"
             if not chat_id in self.groq_user_messages:
-                text = "ساخت گفتگوی تازه با Groq."
+                response = "ساخت گفتگوی تازه با Groq."
             else:
-                text = "ادامه گفتگوی پیشین با Groq."
-        elif message in "4۴":
+                response = "ادامه گفتگوی پیشین با Groq."
+        elif message in "3۳":
             if chat_id in self.chatgpt_user_messages:
                 del self.chatgpt_user_messages[chat_id]
-                text = "گفتگوی پیشین با ChatGPT پاک شد."
+                response = "گفتگوی پیشین با ChatGPT پاک شد."
             else:
-                text = "شما هیچ گفتگویی  با ChatGPT نداشتید."
-        elif message in "5۵":
-            if chat_id in self.deepseek_user_messages:
-                del self.deepseek_user_messages[chat_id]
-                text = "گفتگوی پیشین با Deepseek پاک شد."
-            else:
-                text = "شما هیچ گفتگویی  با Deepseek نداشتید."
-        elif message in "6۶":
+                response = "شما هیچ گفتگویی  با ChatGPT نداشتید."
+        elif message in "4۴":
             if chat_id in self.groq_user_messages:
                 del self.groq_user_messages[chat_id]
-                text = "گفتگوی پیشین با Groq پاک شد."
+                response = "گفتگوی پیشین با Groq پاک شد."
             else:
-                text = "شما هیچ گفتگویی  با Groq نداشتید."
+                response = "شما هیچ گفتگویی  با Groq نداشتید."
         elif chat_id in self.chats:
-            response = ""
             if self.chats[chat_id] == "chatgpt":
-                response = self.ask_chatgpt(chat_id, message)
-            elif self.chats[chat_id] == "deepseek":
-                response = self.ask_deepseek(chat_id, message)
+                response = self.ask_chatgpt(chat_id, message, max_tokens=20, model="gpt-4o-mini")
             elif self.chats[chat_id] == "groq":
-                response = self.ask_groq(chat_id, message)
-            for text in self.split_long_text(response):
-                self.send_response(message_type, user, text)
+                response = self.ask_groq(chat_id, message, max_tokens=20)
         else:
-            text = self.get_help()
-        if text:
+            response = self.get_help()
+        for text in self.split_long_text(response):
             self.send_response(message_type, user, text)
 
     def get_help(self):
         text = "برای در یافت راهنما حرف h و برای هر یک از دستورات زیر یکی از شماره ها را به ربات بفرستید.\n"
         text += "1. ساخت یا ادامه گفتگو با ChatGPT.\n"
-        text += "2. ساخت یا ادامه گفتگو با Deepseek.\n"
-        text += "3. ساخت یا ادامه گفتگو با Groq.\n"
-        text += "4. پاک کردن گفتگوی پیشین با ChatGPT.\n"
-        text += "5. پاک کردن گفتگوی پیشین با Deepseek.\n"
-        text += "6. پاک کردن گفتگوی پیشین با Groq.\n"
+        text += "2. ساخت یا ادامه گفتگو با Groq.\n"
+        text += "3. پاک کردن گفتگوی پیشین با ChatGPT.\n"
+        text += "4. پاک کردن گفتگوی پیشین با Groq.\n"
         return text
 
 
