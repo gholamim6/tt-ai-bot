@@ -373,6 +373,7 @@ class TeamTalkServer:
 				# indicates success or irrelevance
 				if params["number"] == CMD_ERR_IGNORE or params["number"] == CMD_ERR_SUCCESS:
 					continue
+				print(line)
 				raise TeamTalkError(params["number"], params["message"])
 			# Call messages for the event if necessary
 			for func in self.subscriptions.get(event, []):

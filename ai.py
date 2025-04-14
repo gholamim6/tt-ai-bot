@@ -1,3 +1,8 @@
+# Author: Golshan Ahangari
+# https://github.com/golshan-Ahangari/
+# last update: 2025/04/14
+
+
 import openai
 import groq
 import requests
