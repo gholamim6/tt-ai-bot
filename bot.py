@@ -100,12 +100,12 @@ class Bot(teamtalk.TeamTalkServer):
         text_buffer = ''
         while text_lines:
             if len(text_buffer + text_lines[0]) > 250:
-                short_texts.append(text_buffer)
+                short_texts.append(text_buffer.strip())
                 text_buffer = ''
             else:
                 text_buffer += text_lines.pop(0) + '\n'
                 if not text_lines:
-                    short_texts.append(text_buffer)
+                    short_texts.append(text_buffer.strip())
         return short_texts
 
     def send_response(self, message_type, user, message):
