@@ -22,5 +22,12 @@ if __name__ == "__main__":
         os.system('cls')
     # Start the bot.
     bot.start_bot()
-    # Add a input to avoid closing the program
-    input("Press enter to exit.")
+    # adding a loop which ables us to restart the bot more easyly.
+    while True:
+        try:
+            # Add a input to stop the loop.
+            input("Press CTRL+C to exit.\nPress enter to restart.\n")
+            bot.restart_bot()
+        except KeyboardInterrupt:
+            print('Exiting ...')
+            break

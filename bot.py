@@ -5,6 +5,7 @@
 
 import sys
 import json
+import time
 import teamtalk
 from threading import Thread
 from pathlib import Path
@@ -93,6 +94,15 @@ class Bot(teamtalk.TeamTalkServer):
         # this last function ensures that bot can read and write to teamtalk server. we put in a thread to avoid blocking main thread.
         Thread(target=self.handle_messages, args=(1,), daemon=True).start()
 
+    def restart_bot(self):
+        if not self.disconnecting:
+            self.disconnect()
+        # sleep for three seconds to bot handles the disconnecting status
+        time.sleep(3)
+        super().__init__()
+        self.subscribe("messagedeliver", self.on_message_deliver)
+        self.start_bot()
+        
     def split_long_text(self, text):
         # Because of teamtalk limits for message length, We split it to smaller line and send it in several messages if necessary
         short_texts = []

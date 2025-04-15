@@ -331,7 +331,12 @@ class TeamTalkServer:
 		line = line.replace(b"\n", b"\r")
 		if not line.endswith(b"\r\n"):
 			line += b"\r\n"
-		self.con.write(line)
+		try:
+			self.con.write(line)
+		except AttributeError:
+			# sometimes when trying to send the line to the server, the client will get disconnected and the connection object will be distroyed
+			# if this happens, a AttributeError will raise and we just ignore it. hopefully in the next command the app will notice the disconnecting status
+			pass
 
 	def disconnect(self):
 		"""Disconnect from this server.
@@ -350,7 +355,12 @@ class TeamTalkServer:
 			if self._login_sequence == 2:
 				self._login_sequence = 0
 				break
-			line = self.read_line(timeout)
+			try:
+				line = self.read_line(timeout)
+			except AttributeError:
+				# Sometimes during timeout reading the bot will be disconnected and the socket object has been already destroyed.
+				# this issue raises AttributeError and. we just send the while loop to next iteration and the loop checks for disconnecting status and the problem will be resolved peacefully.
+				continue
 			line = line.strip()
 			if line == b"pong":
 				# response to ping, which is handled internally
@@ -399,7 +409,7 @@ class TeamTalkServer:
 			# in case usertimeout was changed somehow
 			# logic from TTCom, which had a preferable approach to TT clients for what we're doing
 			# better safe than sorry
-			pingtime = float(self.server_params["usertimeout"])
+			pingtime = float(self.server_params.get("usertimeout", 0))
 			if pingtime < 1:
 				pingtime = 0.3
 			elif pingtime < 1.5:
@@ -852,7 +862,10 @@ class TeamTalkServer:
 		"""Event fired when a user is removed from (or leaves) a channel"""
 		user_index = self.get_user(params["userid"], index=True)
 		if user_index != None:
-			del self.users[user_index]["chanid"]
+			try:
+				del self.users[user_index]["chanid"]
+			except KeyError:
+				pass
 
 	@staticmethod
 	def _handle_updateuser(self, params):
