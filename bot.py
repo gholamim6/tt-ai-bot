@@ -179,14 +179,16 @@ class Bot(teamtalk.TeamTalkServer):
             else:
                 response = "ادامه گفتگوی پیشین با Groq."
         elif message in "3۳":
-            self.chats.pop(chat_id)
+            if chat_id in self.chats:
+                self.chats.pop(chat_id)
             if chat_id in self.chatgpt_user_messages:
                 self.chatgpt_user_messages.pop(chat_id)
                 response = "گفتگوی پیشین با ChatGPT پاک شد."
             else:
                 response = "شما هیچ گفتگویی  با ChatGPT نداشتید."
         elif message in "4۴":
-            self.chats.pop(chat_id)
+            if chat_id in self.chats:
+                self.chats.pop(chat_id)
             if chat_id in self.groq_user_messages:
                 self.groq_user_messages.pop(chat_id)
                 response = "گفتگوی پیشین با Groq پاک شد."
