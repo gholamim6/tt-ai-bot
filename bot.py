@@ -145,6 +145,15 @@ class Bot(teamtalk.TeamTalkServer):
         username = user["username"]
         nickname = user["nickname"]
         chat_id = ""
+        if message_type == teamtalk.USER_MSG:
+            print(f'private message from "{nickname}" with username "{username}":\n"{message}"')
+            chat_id = f'user:{username}'
+        elif message_type == teamtalk.CHANNEL_MSG:
+            if not message.startswith('/'):
+                return
+            print(f'channel message from "{nickname}" with username "{username}":\n"{message}"')
+            chanid = params["chanid"]
+            chat_id = f'channel:{chanid}'
         # First checking if the user wants a help for using the bot.
         if not message or message.lower() == "h":
             self.send_response(message_type, user, self.get_help())
@@ -157,13 +166,7 @@ class Bot(teamtalk.TeamTalkServer):
             self.send_response(message_type, user, "افسوس! شما نمیتوانید خارج از کانال به ربات پیام بدهید!")
             return
         # Creat a chat_id to save the users and channels and which AI they choosed to talk in self.chats dictionary
-        if message_type == teamtalk.USER_MSG:
-            print(f'private message from "{nickname}" with username "{username}":\n"{message}"')
-            chat_id = f'user:{username}'
-        elif message_type == teamtalk.CHANNEL_MSG:
-            print(f'channel message from "{nickname}" with username "{username}":\n"{message}"')
-            chanid = params["chanid"]
-            chat_id = f'channel:{chanid}'
+            message = message.lstrip('/')
         # Adding bot options menu to select and remove AI to chat.
         # Add Persian numbers to get numbers in different forms.
         if message in "1۱":
@@ -207,6 +210,7 @@ class Bot(teamtalk.TeamTalkServer):
     def get_help(self):
         # Creating a help string for introducing the bot menu to the user.
         text = "برای در یافت راهنما حرف h و برای هر یک از دستورات زیر یکی از شماره ها را به ربات بفرستید.\n"
+        text += 'برای فرستادن این دستورات در کانال یک کاراکتر "/" پیش از تمام این دستور ها بیفزایید.\n'
         text += "1. ساخت یا ادامه گفتگو با ChatGPT.\n"
         text += "2. ساخت یا ادامه گفتگو با Groq.\n"
         text += "3. پاک کردن گفتگوی پیشین با ChatGPT.\n"
